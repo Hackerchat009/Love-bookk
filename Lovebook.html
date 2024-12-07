@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สมุดให้กำลังใจ</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4c5d5;
+    }
+
+    .book {
+      width: 600px;
+      height: 500px;
+      perspective: 1000px;
+      position: relative;
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      transform-origin: left;
+      transform: rotateY(0deg);
+      transition: transform 0.6s ease-in-out;
+      backface-visibility: hidden;
+    }
+
+    .page:nth-child(even) {
+      transform-origin: right;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .content img {
+      width: 400px;
+      height: 300px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      object-fit: cover; 
+    }
+
+    button {
+      margin: 20px 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #f06292;
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background-color: #e91e63;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .choices button {
+      position: fixed;
+      width: 150px;
+      height: 150px;
+      border-radius: 100%;
+      border: none;
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s ease, box-shadow 0.1s ease; 
+    }
+    .choices #forgive {
+      background-color: #4caf50;
+      bottom: 500px;
+      right: 250px;
+      right: 280px; 
+      top: 15%;
+    }
+
+    .choices #forgive:hover {
+      background-color: #388e3c;
+    }
+
+    .choices #angrier {
+      background-color: #f44336;
+      bottom: 180px;
+      right: 250px;
+      right: 280px;
+      top: 40%;
+    }
+
+    .choices #angrier:hover {
+      background-color: #d32f2f;
+    }
+
+    .choices button:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .choices button {
+        width: 80px;
+        height: 80px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- เพลงที่ซ่อนอยู่ -->
+  <audio id="backgroundMusic" src="xxx.mp3" loop></audio>
+
+  <div class="book">
+    <div class="page" id="page1">
+      <div class="content">
+        <img src="1.jpg" alt="เสียใจ">
+        วันนี้เป็นไงบ้างน้าาา 😢
+      </div>
+    </div>
+    <div class="page" id="page2">
+      <div class="content">
+        <img src="2.jpg" alt="คนสำคัญ">
+        เหนื่อยรึป่าววว ❤️
+      </div>
+    </div>
+    <div class="page" id="page3">
+      <div class="content">
+        <img src="3.jpg" alt="โอ๋ๆ">
+        สู้ๆนะค้าบคนเก่ง 🌟
+      </div>
+    </div>
+    <div class="page" id="page4">
+      <div class="content">
+        <img src="4.jpg" alt="ขอบคุณ">
+        เดียวเค้าพาไปเลี้ยงบุฟเฟ่เลอ 🌻
+      </div>
+    </div>
+    <div class="page" id="page5">
+      <div class="content">
+        <img src="5.jpg" alt="รักเธอนะ">
+        หายเหนื่อยนะค้าบ 💕
+      </div>
+    </div>
+  </div>
+  <button id="prev">ย้อนกลับ</button>
+  <button id="next">ถัดไป</button>
+
+  <div class="choices" id="choices">
+    <button id="forgive">หายดีล้า</button>
+    <button id="angrier">เหนื่อยอยู่เลย</button>
+  </div>
+
+  <script>
+    let currentPage = 1;
+
+    const pages = document.querySelectorAll('.page');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+    const choices = document.getElementById('choices');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+
+    function updateBook() {
+      pages.forEach((page, index) => {
+        if (index === currentPage - 1) {
+          page.style.transform = 'rotateY(0deg)';
+        } else if (index < currentPage - 1) {
+          page.style.transform = 'rotateY(-180deg)';
+        } else {
+          page.style.transform = 'rotateY(180deg)';
+        }
+      });
+
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage === pages.length;
+
+      if (currentPage === pages.length) {
+        choices.style.display = 'block';
+      } else {
+        choices.style.display = 'none';
+      }
+    }
+
+    prevButton.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updateBook();
+      }
+    });
+
+    nextButton.addEventListener('click', () => {
+      if (currentPage < pages.length) {
+        currentPage++;
+        if (currentPage === 2) {
+          backgroundMusic.play();
+        }
+        updateBook();
+      }
+    });
+
+    document.getElementById('forgive').addEventListener('click', () => {
+      alert('ขอบคุณที่หายงอนนะ ❤️');
+    });
+
+    document.getElementById('angrier').addEventListener('click', () => {
+      alert('เมี๊ยววว');
+    });
+
+    updateBook();
+  </script>
+</body>
+</html>
